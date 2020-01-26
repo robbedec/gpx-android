@@ -20,9 +20,7 @@ class LocationRecorderService : Service() {
         object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult?) {
                 locationResult ?: return
-
-                // TODO: Call something when location is changed
-                Timber.i("Lat: ${locationResult.lastLocation.latitude} \n Long: ${locationResult.lastLocation.longitude}")
+                registerNewLocation(locationResult)
             }
         }
     }
@@ -58,5 +56,9 @@ class LocationRecorderService : Service() {
             fastestInterval = 5000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
+    }
+
+    private fun registerNewLocation(newLocation: LocationResult) {
+        Timber.i("Lat: ${newLocation.lastLocation.latitude} \n Long: ${newLocation.lastLocation.longitude}")
     }
 }
