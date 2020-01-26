@@ -8,7 +8,6 @@ import android.os.Bundle
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -18,7 +17,6 @@ import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
 
-    private val COARSE_LOCATION_REQUEST_CODE = 101
     private val PERMISSION_ALL = 1
     private val PERMISSIONS = arrayOf(
         Manifest.permission.ACCESS_FINE_LOCATION,
@@ -52,20 +50,15 @@ class MainActivity : AppCompatActivity() {
         applicationContext?.startService(intent)
     }
 
+    /**
+     * Check if the app has the required permissions.
+     *
+     * @param context
+     * @param permissions
+     *
+     * @return True if the app has all permissions, false in other scenarios.
+     */
     private fun checkPermissions(context: Context, vararg permissions: String): Boolean = permissions.all {
         ActivityCompat.checkSelfPermission(context, it) == PackageManager.PERMISSION_GRANTED
-    }
-
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        when (requestCode) {
-            COARSE_LOCATION_REQUEST_CODE -> {
-                if (grantResults.isEmpty() || grantResults[0] != PackageManager.PERMISSION_GRANTED) {
-                    Timber.i("Permission has been denied by user")
-                } else {
-                    Timber.i("Permission has been granted by user")
-                }
-            }
-        }
     }
 }
