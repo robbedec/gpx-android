@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
         }
 
         val intent = Intent(this.applicationContext, LocationRecorderService::class.java)
-        applicationContext?.startService(intent)
+        //applicationContext?.startService(intent)
     }
 
     /**

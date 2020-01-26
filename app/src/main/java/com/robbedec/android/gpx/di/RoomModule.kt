@@ -1,8 +1,6 @@
 package com.robbedec.android.gpx.di
 
 import android.app.Application
-import android.content.SharedPreferences
-import com.robbedec.android.gpx.PusherApplication
 import com.robbedec.android.gpx.data.room.GpxDatabase
 import dagger.Module
 import dagger.Provides
