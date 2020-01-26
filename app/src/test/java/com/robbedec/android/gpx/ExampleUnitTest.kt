@@ -1,4 +1,4 @@
-package com.example.android.gpx
+package com.robbedec.android.gpx
 
 import org.junit.Test
 

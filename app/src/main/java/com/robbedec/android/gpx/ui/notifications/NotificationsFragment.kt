@@ -1,4 +1,4 @@
-package com.example.android.gpx.ui.notifications
+package com.robbedec.android.gpx.ui.notifications
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,7 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
-import com.example.android.gpx.R
+import com.robbedec.android.gpx.R
 
 class NotificationsFragment : Fragment() {
 

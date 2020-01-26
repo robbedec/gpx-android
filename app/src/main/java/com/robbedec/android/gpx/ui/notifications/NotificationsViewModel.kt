@@ -1,4 +1,4 @@
-package com.example.android.gpx.ui.notifications
+package com.robbedec.android.gpx.ui.notifications
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
