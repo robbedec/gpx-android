@@ -15,6 +15,8 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
 import com.robbedec.android.gpx.PusherApplication
 import com.robbedec.android.gpx.R
@@ -29,6 +31,7 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
+import java.security.acl.Owner
 
 
 class HomeFragment : Fragment() {
@@ -55,8 +58,7 @@ class HomeFragment : Fragment() {
         map = binding.map
         setupMap()
         startService()
-        //stopService()
-
+        stopService()
         return binding.root
     }
 
@@ -92,7 +94,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun startService() {
-        /*val intent = Intent(context, LocationRecorderService::class.java)
+        val intent = Intent(context, LocationRecorderService::class.java)
+
         locationRecorderServiceConnection = object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
                 locationRecorderServiceBound = false
@@ -100,23 +103,18 @@ class HomeFragment : Fragment() {
 
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 val binder = service as LocationRecorderService.LocationRecorderServiceBinder
-                this@HomeFragment.locationRecorderService = binder.getService()
-                this@HomeFragment.locationRecorderService.startLocationUpdates()
+                locationRecorderService = binder.getService()
                 locationRecorderServiceBound = true
-
-
             }
         }
-        //context!!.startService(intent)
-        ContextCompat.startForegroundService(context!!, intent)
-        context!!.bindService(intent, locationRecorderServiceConnection, 0)*/
 
-        LocationRecorderService.startService(context!!)
+        context!!.startService(intent)
+        context!!.bindService(Intent(context, LocationRecorderService::class.java), locationRecorderServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
     private fun stopService() {
         Handler().postDelayed({
-            //locationRecorderService.stopLocationUpdates()
+            locationRecorderService.stopLocationUpdates()
             Timber.i("Locations stopped")
         }, 1000 * 15)
 

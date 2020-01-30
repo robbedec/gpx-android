@@ -13,13 +13,17 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.robbedec.android.gpx.data.repositories.TrackRepository
 import timber.log.Timber
+import javax.inject.Inject
 
 class LocationRecorderService : Service() {
 
+    @Inject lateinit var trackRepository: TrackRepository
+
     private val CHANNEL_ID = "1337"
 
-    private val serviceBinder: Binder = LocationRecorderServiceBinder()
+    private val serviceBinder = LocationRecorderServiceBinder()
 
     private val fusedLocationClient by lazy {
         LocationServices.getFusedLocationProviderClient(this@LocationRecorderService)
@@ -34,21 +38,8 @@ class LocationRecorderService : Service() {
         }
     }
 
-    companion object {
-
-        fun startService(context: Context) {
-            val intent = Intent(context, LocationRecorderService::class.java)
-            ContextCompat.startForegroundService(context, intent)
-        }
-
-        fun stopService(context: Context) {
-            val intent = Intent(context, LocationRecorderService::class.java)
-            context.stopService(intent)
-        }
-    }
-
     inner class LocationRecorderServiceBinder: Binder() {
-        fun getService() = this@LocationRecorderService
+        fun getService() = LocationRecorderService()
     }
 
     override fun onBind(intent: Intent?): IBinder? {
@@ -56,7 +47,6 @@ class LocationRecorderService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        Timber.i("On start command called")
         startLocationUpdates()
 
         // What should the system do with low memory
@@ -69,7 +59,7 @@ class LocationRecorderService : Service() {
         stopLocationUpdates()
     }
 
-    private fun startLocationUpdates() {
+    fun startLocationUpdates() {
         // TODO: start
 
         startForeground(1337, buildForegroundNotification())
@@ -79,16 +69,17 @@ class LocationRecorderService : Service() {
             Looper.getMainLooper())
     }
 
-    private fun resumeLocationUpdates() {
+    fun resumeLocationUpdates() {
         // TODO: create new segment and start location updates
     }
 
-    private fun pauseLocationUpdates() {
+    fun pauseLocationUpdates() {
         // TODO: finish segment and pause location updates
     }
 
-     private fun stopLocationUpdates() {
+     fun stopLocationUpdates() {
         // TODO: finish track
+         Timber.i("Service stopped")
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
@@ -100,6 +91,11 @@ class LocationRecorderService : Service() {
         }
     }
 
+    /**
+     * Defines what to do when the callback sends a new location.
+     *
+     * @param newLocation The latest recorded location.
+     */
     private fun registerNewLocation(newLocation: LocationResult) {
         Timber.i("Lat: ${newLocation.lastLocation.latitude} \n Long: ${newLocation.lastLocation.longitude}")
     }

@@ -1,6 +1,7 @@
 package com.robbedec.android.gpx.di
 
 import android.app.Application
+import com.robbedec.android.gpx.services.LocationRecorderService
 import com.robbedec.android.gpx.ui.home.HomeFragment
 import dagger.BindsInstance
 import dagger.Component
@@ -19,4 +20,5 @@ interface ApplicationComponent {
     }
 
     fun inject(fragment: HomeFragment)
+    fun inject(service: LocationRecorderService)
 }
