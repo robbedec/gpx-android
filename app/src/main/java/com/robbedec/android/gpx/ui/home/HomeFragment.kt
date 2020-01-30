@@ -5,6 +5,7 @@ import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
+import android.opengl.Visibility
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
@@ -13,11 +14,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
+import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
+import com.robbedec.android.gpx.MainActivity
 import com.robbedec.android.gpx.PusherApplication
 import com.robbedec.android.gpx.R
 import com.robbedec.android.gpx.databinding.FragmentHomeBinding
@@ -57,8 +60,7 @@ class HomeFragment : Fragment() {
 
         map = binding.map
         setupMap()
-        startService()
-        stopService()
+
         return binding.root
     }
 
@@ -70,6 +72,13 @@ class HomeFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         map.onResume()
+
+        binding.startButton.setOnClickListener {
+            binding.startButton.isVisible = false
+            binding.pauseButton.isVisible = true
+            startService()
+            stopService()
+        }
     }
 
     override fun onPause() {
@@ -94,6 +103,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun startService() {
+        Timber.i("Service started")
         val intent = Intent(context, LocationRecorderService::class.java)
 
         locationRecorderServiceConnection = object : ServiceConnection {
@@ -117,7 +127,11 @@ class HomeFragment : Fragment() {
         Handler().postDelayed({
             context!!.stopService(Intent(context, LocationRecorderService::class.java))
             context!!.unbindService(locationRecorderServiceConnection)
+            resetLayout()
         }, 1000 * 7)
+    }
+
+    private fun resetLayout() {
 
     }
 }
