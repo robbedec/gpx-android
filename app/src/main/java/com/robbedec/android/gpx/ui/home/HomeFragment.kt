@@ -98,6 +98,7 @@ class HomeFragment : Fragment() {
 
         locationRecorderServiceConnection = object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
+                locationRecorderService.stopLocationUpdates()
                 locationRecorderServiceBound = false
             }
 
@@ -114,9 +115,9 @@ class HomeFragment : Fragment() {
 
     private fun stopService() {
         Handler().postDelayed({
-            locationRecorderService.stopLocationUpdates()
-            Timber.i("Locations stopped")
-        }, 1000 * 15)
+            context!!.stopService(Intent(context, LocationRecorderService::class.java))
+            context!!.unbindService(locationRecorderServiceConnection)
+        }, 1000 * 7)
 
     }
 }
