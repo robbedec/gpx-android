@@ -12,6 +12,7 @@ import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.preference.PreferenceManager
@@ -54,7 +55,7 @@ class HomeFragment : Fragment() {
         map = binding.map
         setupMap()
         startService()
-        stopService()
+        //stopService()
 
         return binding.root
     }
@@ -91,7 +92,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun startService() {
-        val intent = Intent(context, LocationRecorderService::class.java)
+        /*val intent = Intent(context, LocationRecorderService::class.java)
         locationRecorderServiceConnection = object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
                 locationRecorderServiceBound = false
@@ -99,18 +100,23 @@ class HomeFragment : Fragment() {
 
             override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
                 val binder = service as LocationRecorderService.LocationRecorderServiceBinder
-                locationRecorderService = binder.getService()
+                this@HomeFragment.locationRecorderService = binder.getService()
+                this@HomeFragment.locationRecorderService.startLocationUpdates()
                 locationRecorderServiceBound = true
+
 
             }
         }
-        context!!.startService(intent)
-        context!!.bindService(intent, locationRecorderServiceConnection, 0)
+        //context!!.startService(intent)
+        ContextCompat.startForegroundService(context!!, intent)
+        context!!.bindService(intent, locationRecorderServiceConnection, 0)*/
+
+        LocationRecorderService.startService(context!!)
     }
 
     private fun stopService() {
         Handler().postDelayed({
-            locationRecorderService.stopLocationUpdates()
+            //locationRecorderService.stopLocationUpdates()
             Timber.i("Locations stopped")
         }, 1000 * 15)
 
