@@ -1,10 +1,13 @@
 package com.robbedec.android.gpx
 
 import android.Manifest
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.os.IBinder
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
@@ -47,7 +50,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         val intent = Intent(this.applicationContext, LocationRecorderService::class.java)
+        val serviceConnection = object : ServiceConnection {
+            override fun onServiceDisconnected(name: ComponentName?) {
+                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            }
+
+            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+                val binder = service as LocationRecorderService.LocationRecorderServiceBinder
+            }
+
+        }
         //applicationContext?.startService(intent)
+        //bindService()
     }
 
     /**

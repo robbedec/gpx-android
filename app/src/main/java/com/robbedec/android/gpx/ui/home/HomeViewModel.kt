@@ -13,13 +13,13 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(private val trackRepository: TrackRepository) : ViewModel() {
 
     init {
-        viewModelScope.launch {
+        /*viewModelScope.launch {
             //trackRepository.clearTracks()
             trackRepository.insertTrack(Track(id = 1, name = "robbe"))
             trackRepository.insertSegment(TrackSegment(id = 1, trackId = 1))
             trackRepository.insertTrack(TrackPoint(id = 1, latitude = 5.0, longitude = 10.0, elevation = 15.0, trackSegmentId = 1))
             val tracks = trackRepository.getTracks()
             tracks.forEach { track -> Timber.i("TRACKNAME: ${track.track.name} \n LATITUDE OF FIRST POINT ${track.segments.first().trackPoints.first().elevation}") }
-        }
+        }*/
     }
 }
