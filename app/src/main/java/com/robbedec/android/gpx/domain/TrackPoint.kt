@@ -10,6 +10,7 @@ data class TrackPoint(
     @PrimaryKey(autoGenerate = true)
     var id: Long = 0L,
 
+    var trackSegmentId: Long = 0L,
     var latitude: Double = 0.0,
     var longitude: Double = 0.0,
     var elevation: Double = 0.0,

@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.robbedec.android.gpx.data.room.dao.TrackDao
+import com.robbedec.android.gpx.domain.Track
 import com.robbedec.android.gpx.domain.TrackPoint
+import com.robbedec.android.gpx.domain.TrackSegment
 
-@Database(entities = [TrackPoint::class], version = 1, exportSchema = false)
+@Database(entities = [Track::class, TrackSegment::class, TrackPoint::class], version = 2, exportSchema = false)
 abstract class GpxDatabase : RoomDatabase() {
 
-    //TODO: DAO's
+    abstract val trackDao: TrackDao
 
     // Allows clients to access methods to create or get the database without instantiating the class
     companion object {

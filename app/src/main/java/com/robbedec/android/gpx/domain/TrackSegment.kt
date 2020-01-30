@@ -1,4 +1,14 @@
 package com.robbedec.android.gpx.domain
 
-data class TrackSegment(var id: Long = 0L, var trackPoints: List<TrackPoint> = listOf()) {
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "track_segment_table")
+data class TrackSegment(
+
+    @PrimaryKey(autoGenerate = true)
+    var id: Long = 0L,
+
+    var trackId: Long = 0L
+    ) {
 }
