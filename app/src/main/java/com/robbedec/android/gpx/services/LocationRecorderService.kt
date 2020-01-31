@@ -24,8 +24,6 @@ class LocationRecorderService : Service() {
 
     @Inject lateinit var trackRepository: TrackRepository
 
-    private val CHANNEL_ID = "1337"
-
     private var trackId: Long? = null
     private var segmentId: Long? = null
 
@@ -42,6 +40,10 @@ class LocationRecorderService : Service() {
                 registerNewLocation(locationResult)
             }
         }
+    }
+
+    companion object {
+        private const val CHANNEL_ID = "1337"
     }
 
     inner class LocationRecorderServiceBinder: Binder() {

@@ -50,7 +50,7 @@ class HomeViewModel @Inject constructor(private val trackRepository: TrackReposi
             Timber.i("${track.track.id}")
             Timber.i("${track.segments.first().trackSegment.id}")
             Timber.i("${track.segments.first().trackPoints.first().time} en ${track.segments.first().trackPoints.first().latitude}")
-
+            Timber.i("${track.calculateDistance()}")
         }
     }
 }
