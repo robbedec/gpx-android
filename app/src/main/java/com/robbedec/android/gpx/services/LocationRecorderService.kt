@@ -11,7 +11,12 @@ import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
 import com.google.android.gms.location.LocationServices
+import com.robbedec.android.gpx.PusherApplication
 import com.robbedec.android.gpx.data.repositories.TrackRepository
+import com.robbedec.android.gpx.domain.TrackPoint
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -20,6 +25,9 @@ class LocationRecorderService : Service() {
     @Inject lateinit var trackRepository: TrackRepository
 
     private val CHANNEL_ID = "1337"
+
+    private var trackId: Long? = null
+    private var segmentId: Long? = null
 
     private val serviceBinder = LocationRecorderServiceBinder()
 
@@ -45,6 +53,11 @@ class LocationRecorderService : Service() {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        PusherApplication.appComponent.inject(this)
+
+        trackId = intent?.extras?.getLong("TRACK_ID")
+        segmentId = intent?.extras?.getLong("SEGMENT_ID")
+
         startLocationUpdates()
 
         // What should the system do with low memory
@@ -94,11 +107,19 @@ class LocationRecorderService : Service() {
 
     /**
      * Defines what to do when the callback sends a new location.
+     * Store the [TrackPoint] in the database.
      *
      * @param newLocation The latest recorded location.
      */
     private fun registerNewLocation(newLocation: LocationResult) {
-        Timber.i("Lat: ${newLocation.lastLocation.latitude} \n Long: ${newLocation.lastLocation.longitude}")
+        Timber.i("Lat: ${newLocation.lastLocation.latitude} | Long: ${newLocation.lastLocation.longitude}")
+
+        GlobalScope.launch {
+            newLocation.lastLocation.apply {
+                // TODO: only save requests with accuracy < X amount of meters from target ex. if (accuracy < 20)
+                trackRepository.insertTrackPoint(TrackPoint(trackSegmentId = segmentId!!, longitude = longitude, latitude = latitude, elevation = altitude))
+            }
+        }
     }
 
     /**

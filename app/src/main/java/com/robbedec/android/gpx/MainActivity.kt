@@ -48,20 +48,6 @@ class MainActivity : AppCompatActivity() {
         if (!checkPermissions(this, *PERMISSIONS)) {
             ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_ALL)
         }
-
-        val intent = Intent(this.applicationContext, LocationRecorderService::class.java)
-        val serviceConnection = object : ServiceConnection {
-            override fun onServiceDisconnected(name: ComponentName?) {
-                TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-            }
-
-            override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-                val binder = service as LocationRecorderService.LocationRecorderServiceBinder
-            }
-
-        }
-        //applicationContext?.startService(intent)
-        //bindService()
     }
 
     /**

@@ -10,10 +10,10 @@ import com.robbedec.android.gpx.domain.TrackWithSegments
 interface TrackDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(track: Track)
+    fun insert(track: Track): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insert(trackSegment: TrackSegment)
+    fun insert(trackSegment: TrackSegment): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insert(trackPoint: TrackPoint)
@@ -24,6 +24,10 @@ interface TrackDao {
     @Transaction
     @Query("SELECT * FROM track_table")
     fun getTracks(): List<TrackWithSegments>
+
+    @Transaction
+    @Query("SELECT * FROM track_table WHERE id = :id")
+    fun getTrackById(id: Long): TrackWithSegments
 
     @Query("DELETE FROM track_table")
     fun clear()

@@ -66,19 +66,19 @@ class HomeFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        (activity!!.applicationContext as PusherApplication).appComponent.inject(this)
+        PusherApplication.appComponent.inject(this)
     }
 
     override fun onResume() {
         super.onResume()
         map.onResume()
 
-        binding.startButton.setOnClickListener {
+        homeViewModel.newSegmentId.observe(viewLifecycleOwner, Observer {
             binding.startButton.isVisible = false
             binding.pauseButton.isVisible = true
             startService()
             stopService()
-        }
+        })
     }
 
     override fun onPause() {
@@ -104,7 +104,11 @@ class HomeFragment : Fragment() {
 
     private fun startService() {
         Timber.i("Service started")
+
         val intent = Intent(context, LocationRecorderService::class.java)
+        intent.putExtra("TRACK_ID", homeViewModel.newTrackId.value)
+        intent.putExtra("SEGMENT_ID", homeViewModel.newSegmentId.value)
+
 
         locationRecorderServiceConnection = object : ServiceConnection {
             override fun onServiceDisconnected(name: ComponentName?) {
@@ -128,6 +132,7 @@ class HomeFragment : Fragment() {
             context!!.stopService(Intent(context, LocationRecorderService::class.java))
             context!!.unbindService(locationRecorderServiceConnection)
             resetLayout()
+            homeViewModel.test()
         }, 1000 * 7)
     }
 

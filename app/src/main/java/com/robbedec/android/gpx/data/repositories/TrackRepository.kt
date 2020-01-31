@@ -15,19 +15,19 @@ class TrackRepository @Inject constructor(gpxDatabase: GpxDatabase) : ITrackRepo
 
     private val trackDao: TrackDao = gpxDatabase.trackDao
 
-    suspend fun insertTrack(track: Track) {
-        withContext(Dispatchers.IO) {
+    suspend fun insertTrack(track: Track): Long {
+        return withContext(Dispatchers.IO) {
             trackDao.insert(track)
         }
     }
 
-    suspend fun insertSegment(segment: TrackSegment) {
-        withContext(Dispatchers.IO) {
+    suspend fun insertSegment(segment: TrackSegment): Long {
+        return withContext(Dispatchers.IO) {
             trackDao.insert(segment)
         }
     }
 
-    suspend fun insertTrack(point: TrackPoint) {
+    suspend fun insertTrackPoint(point: TrackPoint) {
         withContext(Dispatchers.IO) {
             trackDao.insert(point)
         }
@@ -43,6 +43,12 @@ class TrackRepository @Inject constructor(gpxDatabase: GpxDatabase) : ITrackRepo
         return withContext(Dispatchers.IO) {
             val tracks = trackDao.getTracks()
             tracks
+        }
+    }
+
+    suspend fun getTrackById(id: Long): TrackWithSegments {
+        return withContext(Dispatchers.IO) {
+            trackDao.getTrackById(id)
         }
     }
 

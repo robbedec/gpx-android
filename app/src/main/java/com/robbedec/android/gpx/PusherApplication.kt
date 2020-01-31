@@ -7,7 +7,9 @@ import timber.log.Timber
 
 class PusherApplication : Application() {
 
-    lateinit var appComponent: ApplicationComponent
+    companion object {
+        lateinit var appComponent: ApplicationComponent
+    }
 
     override fun onCreate() {
         super.onCreate()

@@ -43,6 +43,7 @@
             android:layout_margin="16dp"
             app:backgroundTint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_play"
-            tools:ignore="VectorDrawableCompat" />
+            tools:ignore="VectorDrawableCompat"
+            android:onClick="@{() -> viewmodel.startNewTrack()}"/>
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
