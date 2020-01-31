@@ -1,26 +1,19 @@
 package com.robbedec.android.gpx.ui.home
 
-import android.app.Service
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
-import android.opengl.Visibility
 import android.os.Bundle
-import android.os.Handler
 import android.os.IBinder
-import android.os.SystemClock
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Observer
 import androidx.preference.PreferenceManager
-import com.robbedec.android.gpx.MainActivity
 import com.robbedec.android.gpx.PusherApplication
 import com.robbedec.android.gpx.R
 import com.robbedec.android.gpx.databinding.FragmentHomeBinding
@@ -34,7 +27,6 @@ import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
 import timber.log.Timber
-import java.security.acl.Owner
 
 
 class HomeFragment : Fragment() {
@@ -76,9 +68,14 @@ class HomeFragment : Fragment() {
         homeViewModel.newSegmentId.observe(viewLifecycleOwner, Observer {
             binding.startButton.isVisible = false
             binding.pauseButton.isVisible = true
+            binding.stopButton.isVisible = true
+
             startService()
-            stopService()
         })
+
+        binding.stopButton.setOnClickListener {
+            stopService()
+        }
     }
 
     override fun onPause() {
@@ -102,6 +99,10 @@ class HomeFragment : Fragment() {
         map.overlays.add(mLocationOverlay)
     }
 
+    /**
+     * Create the intent to start the [LocationRecorderService] and define its connection to this fragment.
+     * Pass ID's in the intent to tell the service for which track / segment its recording trackpoints.
+     */
     private fun startService() {
         Timber.i("Service started")
 
@@ -128,15 +129,15 @@ class HomeFragment : Fragment() {
     }
 
     private fun stopService() {
-        Handler().postDelayed({
-            context!!.stopService(Intent(context, LocationRecorderService::class.java))
-            context!!.unbindService(locationRecorderServiceConnection)
-            resetLayout()
-            homeViewModel.test()
-        }, 1000 * 7)
+        context!!.stopService(Intent(context, LocationRecorderService::class.java))
+        context!!.unbindService(locationRecorderServiceConnection)
+        resetLayout()
+        homeViewModel.test()
     }
 
     private fun resetLayout() {
-
+        binding.startButton.isVisible = true
+        binding.pauseButton.isVisible = false
+        binding.stopButton.isVisible = false
     }
 }
