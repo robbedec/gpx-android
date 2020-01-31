@@ -19,26 +19,12 @@ class HomeViewModel @Inject constructor(private val trackRepository: TrackReposi
     val newSegmentId: LiveData<Long>
         get() = _newSegmentId
 
-    private var _updateTrack = MediatorLiveData<TrackWithSegments>()
-    val updateTrack: LiveData<TrackWithSegments>
-        get() = _updateTrack
-
-    var _currentTrack = trackRepository.getTrackById(_newTrackId.value ?: 0)
-
-
-    init {
-        Timber.i("test")
-        _updateTrack.addSource(newTrackId) { res ->
-            viewModelScope.launch {
-                Timber.i("RES $res")
-                _currentTrack = trackRepository.getTrackById(res)
-            }
-        }
-    }
+    var currentTrack = trackRepository.getTrackById(_newTrackId.value ?: 0)
 
     fun startNewTrack() {
         viewModelScope.launch {
             _newTrackId.value = trackRepository.insertTrack(Track())
+            currentTrack = trackRepository.getTrackById(_newTrackId.value!!)
             resumeTrack()
         }
 
@@ -61,7 +47,7 @@ class HomeViewModel @Inject constructor(private val trackRepository: TrackReposi
     fun test() {
         viewModelScope.launch {
             Timber.i("${_newTrackId.value}")
-            val track = _currentTrack!!.value!!
+            val track = currentTrack!!.value!!
 
             Timber.i("${track.track.id}")
             Timber.i("${track.segments.first().trackSegment.id}")

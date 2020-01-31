@@ -75,10 +75,6 @@ class HomeFragment : Fragment() {
             startService()
         })
 
-        homeViewModel.updateTrack.observe(viewLifecycleOwner, Observer {
-            Timber.i("het runt")
-        })
-
         binding.stopButton.setOnClickListener {
             stopService()
         }
