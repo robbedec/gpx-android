@@ -53,6 +53,8 @@ class HomeFragment : Fragment() {
         map = binding.map
         setupMap()
 
+        binding.lifecycleOwner = this
+
         return binding.root
     }
 
@@ -71,6 +73,10 @@ class HomeFragment : Fragment() {
             binding.stopButton.isVisible = true
 
             startService()
+        })
+
+        homeViewModel.updateTrack.observe(viewLifecycleOwner, Observer {
+            Timber.i("het runt")
         })
 
         binding.stopButton.setOnClickListener {

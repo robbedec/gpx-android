@@ -1,5 +1,6 @@
 package com.robbedec.android.gpx.data.room.dao
 
+import androidx.lifecycle.LiveData
 import androidx.room.*
 import com.robbedec.android.gpx.domain.Track
 import com.robbedec.android.gpx.domain.TrackPoint
@@ -27,7 +28,7 @@ interface TrackDao {
 
     @Transaction
     @Query("SELECT * FROM track_table WHERE id = :id")
-    fun getTrackById(id: Long): TrackWithSegments
+    fun getTrackById(id: Long): LiveData<TrackWithSegments>
 
     @Query("DELETE FROM track_table")
     fun clear()

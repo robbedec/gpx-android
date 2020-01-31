@@ -1,5 +1,6 @@
 package com.robbedec.android.gpx.data.repositories
 
+import androidx.lifecycle.LiveData
 import com.robbedec.android.gpx.data.room.GpxDatabase
 import com.robbedec.android.gpx.data.room.dao.TrackDao
 import com.robbedec.android.gpx.domain.Track
@@ -46,10 +47,10 @@ class TrackRepository @Inject constructor(gpxDatabase: GpxDatabase) : ITrackRepo
         }
     }
 
-    suspend fun getTrackById(id: Long): TrackWithSegments {
-        return withContext(Dispatchers.IO) {
-            trackDao.getTrackById(id)
-        }
+    fun getTrackById(id: Long): LiveData<TrackWithSegments> {
+        //return withContext(Dispatchers.IO) {
+          return  trackDao.getTrackById(id)
+        //}
     }
 
     suspend fun clearTracks() {

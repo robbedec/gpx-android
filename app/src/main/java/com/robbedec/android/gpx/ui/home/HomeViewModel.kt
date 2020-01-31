@@ -1,12 +1,10 @@
 package com.robbedec.android.gpx.ui.home
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.*
 import com.robbedec.android.gpx.data.repositories.TrackRepository
 import com.robbedec.android.gpx.domain.Track
 import com.robbedec.android.gpx.domain.TrackSegment
+import com.robbedec.android.gpx.domain.TrackWithSegments
 import kotlinx.coroutines.launch
 import timber.log.Timber
 import javax.inject.Inject
@@ -21,11 +19,29 @@ class HomeViewModel @Inject constructor(private val trackRepository: TrackReposi
     val newSegmentId: LiveData<Long>
         get() = _newSegmentId
 
+    private var _updateTrack = MediatorLiveData<TrackWithSegments>()
+    val updateTrack: LiveData<TrackWithSegments>
+        get() = _updateTrack
+
+    var _currentTrack = trackRepository.getTrackById(_newTrackId.value ?: 0)
+
+
+    init {
+        Timber.i("test")
+        _updateTrack.addSource(newTrackId) { res ->
+            viewModelScope.launch {
+                Timber.i("RES $res")
+                _currentTrack = trackRepository.getTrackById(res)
+            }
+        }
+    }
+
     fun startNewTrack() {
         viewModelScope.launch {
             _newTrackId.value = trackRepository.insertTrack(Track())
             resumeTrack()
         }
+
     }
 
     fun pauseTrack() {
@@ -45,7 +61,7 @@ class HomeViewModel @Inject constructor(private val trackRepository: TrackReposi
     fun test() {
         viewModelScope.launch {
             Timber.i("${_newTrackId.value}")
-            val track = trackRepository.getTrackById(_newTrackId.value!!)
+            val track = _currentTrack!!.value!!
 
             Timber.i("${track.track.id}")
             Timber.i("${track.segments.first().trackSegment.id}")
