@@ -18,14 +18,18 @@ import com.robbedec.android.gpx.PusherApplication
 import com.robbedec.android.gpx.R
 import com.robbedec.android.gpx.databinding.FragmentHomeBinding
 import com.robbedec.android.gpx.services.LocationRecorderService
+import org.osmdroid.api.IMapController
 import org.osmdroid.views.MapView
 import javax.inject.Inject
 import org.osmdroid.config.Configuration
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory
 import org.osmdroid.views.CustomZoomButtonsController
 import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapController
+import org.osmdroid.views.overlay.Polyline
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay
+import org.osmdroid.views.overlay.mylocation.SimpleLocationOverlay
 import timber.log.Timber
 
 
@@ -33,7 +37,11 @@ class HomeFragment : Fragment() {
 
     @Inject lateinit var homeViewModel: HomeViewModel
     private lateinit var binding: FragmentHomeBinding
+
     private lateinit var map: MapView
+    private lateinit var mapController: IMapController
+    private lateinit var mLocationOverlay: MyLocationNewOverlay
+    private lateinit var polyLine: Polyline
 
     private lateinit var locationRecorderServiceConnection: ServiceConnection
     private lateinit var locationRecorderService: LocationRecorderService
@@ -68,11 +76,25 @@ class HomeFragment : Fragment() {
         map.onResume()
 
         homeViewModel.newSegmentId.observe(viewLifecycleOwner, Observer {
+            binding.mapStats.isVisible = true
             binding.startButton.isVisible = false
-            binding.pauseButton.isVisible = true
-            binding.stopButton.isVisible = true
 
             startService()
+        })
+
+        //homeViewModel.currentTrack.value!!.segments[homeViewModel.newSegmentId.value!!.toInt()].trackPoints
+        homeViewModel.currentTrack.observe(viewLifecycleOwner, Observer {
+            if(homeViewModel.currentTrack.value != null) {
+                Timber.i("${homeViewModel.currentTrack.value!!.segments[0].trackPoints.size}")
+
+                val points = homeViewModel.currentTrack.value!!.segments[0].trackPoints
+
+                if(points.isNotEmpty()) {
+                    val newPoint = points[points.size - 1]
+                    val newGeoPoint = GeoPoint(newPoint.latitude, newPoint.longitude)
+                    polyLine.addPoint(newGeoPoint)
+                }
+            }
         })
 
         binding.stopButton.setOnClickListener {
@@ -90,15 +112,26 @@ class HomeFragment : Fragment() {
         map.zoomController.setVisibility(CustomZoomButtonsController.Visibility.SHOW_AND_FADEOUT)
         map.setMultiTouchControls(true)
 
-        val mapController = map.controller
+        mapController = map.controller
         mapController.setZoom(15.0)
-        val startPoint = GeoPoint(51.1787473, 3.1315382)
-        mapController.setCenter(startPoint)
+        //val startPoint = GeoPoint(51.1787473, 3.1315382)
+        //mapController.setCenter(startPoint)
 
 
-        val mLocationOverlay = MyLocationNewOverlay(GpsMyLocationProvider(context), map)
+        val gpsMyLocationProvider = GpsMyLocationProvider(context)
+        gpsMyLocationProvider.locationUpdateMinTime = 2000
+
+        mLocationOverlay = MyLocationNewOverlay(gpsMyLocationProvider, map)
         mLocationOverlay.enableMyLocation()
         map.overlays.add(mLocationOverlay)
+
+        mapController.setCenter(mLocationOverlay.myLocation)
+        mapController.animateTo(mLocationOverlay.myLocation)
+
+        polyLine = Polyline(map)
+        polyLine.isGeodesic = true
+
+        map.overlayManager.add(polyLine)
     }
 
     /**
@@ -126,11 +159,16 @@ class HomeFragment : Fragment() {
             }
         }
 
+        mLocationOverlay.enableFollowLocation()
+
         context!!.startService(intent)
         context!!.bindService(Intent(context, LocationRecorderService::class.java), locationRecorderServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
     private fun stopService() {
+
+        mLocationOverlay.disableFollowLocation()
+
         context!!.stopService(Intent(context, LocationRecorderService::class.java))
         context!!.unbindService(locationRecorderServiceConnection)
         resetLayout()
@@ -139,7 +177,6 @@ class HomeFragment : Fragment() {
 
     private fun resetLayout() {
         binding.startButton.isVisible = true
-        binding.pauseButton.isVisible = false
-        binding.stopButton.isVisible = false
+        binding.mapStats.isVisible = false
     }
 }

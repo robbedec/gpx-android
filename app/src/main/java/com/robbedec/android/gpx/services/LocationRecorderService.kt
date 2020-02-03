@@ -102,7 +102,7 @@ class LocationRecorderService : Service() {
     private fun createLocationRequest(): LocationRequest {
         return LocationRequest.create().apply {
             interval = 10000
-            fastestInterval = 5000
+            fastestInterval = 2000
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
         }
     }
